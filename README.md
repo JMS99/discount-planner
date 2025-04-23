@@ -2,6 +2,8 @@
 
 Una aplicación para gestionar y planificar descuentos de servicios financieros, bancos, fintechs y tarjetas de crédito.
 
+IMPORTANTE: Este proyecto fue realizado aplicando técnicas de Vibe Coding, utilizando Cursor como IDE y haciendo uso, en un 100%, de prompts para la solicitud de código, funcionalidades, configuraciones y dependencias. El objetivo, mas allá de la creación de la idea, era la realización de un MVP básico utilizando solamente las herramientas y cualidades que la IA, a través de una IDE, nos provee en la actualidad.
+
 ## Características
 
 - Gestión de cuentas bancarias y tarjetas
