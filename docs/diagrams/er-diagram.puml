@@ -1,0 +1,103 @@
+@startuml DiscountPlannerER
+
+!define table(x) class x << (T,#FFAAAA) >>
+!define primary_key(x) <u>x</u>
+!define foreign_key(x) #x#
+
+' Estilos
+skinparam linetype ortho
+skinparam class {
+    BackgroundColor White
+    ArrowColor Black
+    BorderColor Black
+}
+
+' Tablas
+table(users) {
+    primary_key(id): BIGINT
+    email: VARCHAR(255)
+    password: VARCHAR(255)
+    full_name: VARCHAR(255)
+    created_at: TIMESTAMP
+    updated_at: TIMESTAMP
+    user_type: VARCHAR(50)
+}
+
+table(consumers) {
+    primary_key(id): BIGINT
+    foreign_key(user_id): BIGINT
+    preferences: JSON
+}
+
+table(institutions) {
+    primary_key(id): BIGINT
+    foreign_key(user_id): BIGINT
+    business_name: VARCHAR(255)
+    tax_id: VARCHAR(50)
+    institution_type: VARCHAR(50)
+    description: TEXT
+}
+
+table(accounts) {
+    primary_key(id): BIGINT
+    name: VARCHAR(255)
+    account_type: VARCHAR(50)
+    foreign_key(institution_id): BIGINT
+    card_type: VARCHAR(50)
+    is_contactless: BOOLEAN
+    is_physical: BOOLEAN
+    created_at: TIMESTAMP
+    updated_at: TIMESTAMP
+}
+
+table(user_accounts) {
+    primary_key(id): BIGINT
+    foreign_key(user_id): BIGINT
+    foreign_key(account_id): BIGINT
+    account_number: VARCHAR(50)
+    card_number: VARCHAR(50)
+    created_at: TIMESTAMP
+    updated_at: TIMESTAMP
+}
+
+table(promotions) {
+    primary_key(id): BIGINT
+    foreign_key(institution_id): BIGINT
+    category: VARCHAR(100)
+    description: TEXT
+    discount_percentage: DECIMAL
+    money_return: DECIMAL
+    day_of_week: INTEGER
+    start_time: TIME
+    end_time: TIME
+    start_date: DATE
+    end_date: DATE
+    is_active: BOOLEAN
+    terms_and_conditions: TEXT
+    account_types: JSON
+    card_types: JSON
+    min_amount: DECIMAL
+    max_amount: DECIMAL
+    external_link: VARCHAR(255)
+    installments: INTEGER
+    installment_interest: DECIMAL
+    payment_methods: JSON
+}
+
+table(account_promotions) {
+    primary_key(id): BIGINT
+    foreign_key(account_id): BIGINT
+    foreign_key(promotion_id): BIGINT
+    created_at: TIMESTAMP
+}
+
+' Relaciones
+users ||--o{ consumers
+users ||--o{ institutions
+users ||--o{ user_accounts
+accounts ||--o{ user_accounts
+institutions ||--o{ promotions
+accounts ||--o{ account_promotions
+promotions ||--o{ account_promotions
+
+@enduml 

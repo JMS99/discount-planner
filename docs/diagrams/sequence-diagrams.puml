@@ -1,0 +1,156 @@
+@startuml DiscountPlannerSequences
+
+' Estilos
+skinparam sequence {
+    ArrowColor Black
+    ActorBorderColor Black
+    LifeLineBorderColor Black
+    ParticipantBorderColor Black
+    ParticipantBackgroundColor White
+}
+
+' Diagrama de Registro
+title Registro de Usuario
+
+actor User as "Usuario"
+participant "Frontend" as FE
+participant "UserService" as US
+participant "UserRepository" as UR
+database "Database" as DB
+
+User -> FE: Ingresa datos de registro
+activate FE
+FE -> US: register(userData)
+activate US
+US -> UR: save(userData)
+activate UR
+UR -> DB: INSERT INTO users
+activate DB
+DB --> UR: id
+deactivate DB
+UR --> US: user
+deactivate UR
+US --> FE: userDTO
+deactivate US
+FE --> User: Registro exitoso
+deactivate FE
+
+@enduml
+
+@startuml AccountRegistration
+
+' Diagrama de Registro de Cuenta
+title Registro de Cuenta para Consumidor
+
+actor Consumer as "Consumidor"
+participant "Frontend" as FE
+participant "AccountService" as AS
+participant "AccountRepository" as AR
+participant "ConsumerService" as CS
+database "Database" as DB
+
+Consumer -> FE: Agrega nueva cuenta
+activate FE
+FE -> AS: createAccount(accountData)
+activate AS
+AS -> AR: save(accountData)
+activate AR
+AR -> DB: INSERT INTO accounts
+activate DB
+DB --> AR: accountId
+deactivate DB
+AR --> AS: account
+deactivate AR
+AS -> CS: linkAccountToConsumer(consumerId, accountId)
+activate CS
+CS -> DB: INSERT INTO consumer_accounts
+activate DB
+DB --> CS: success
+deactivate DB
+CS --> AS: success
+deactivate CS
+AS --> FE: accountDTO
+deactivate AS
+FE --> Consumer: Cuenta agregada exitosamente
+deactivate FE
+
+@enduml
+
+@startuml PromotionSearch
+
+' Diagrama de Búsqueda de Promociones
+title Búsqueda de Promociones
+
+actor Consumer as "Consumidor"
+participant "Frontend" as FE
+participant "PromotionService" as PS
+participant "PromotionRepository" as PR
+participant "AccountService" as AS
+database "Database" as DB
+
+Consumer -> FE: Busca promociones
+activate FE
+FE -> PS: getActivePromotions(filters)
+activate PS
+PS -> AS: getUserAccounts(consumerId)
+activate AS
+AS -> DB: SELECT * FROM consumer_accounts
+activate DB
+DB --> AS: accounts
+deactivate DB
+AS --> PS: accounts
+deactivate AS
+PS -> PR: findByFilters(filters, accounts)
+activate PR
+PR -> DB: SELECT * FROM promotions
+activate DB
+DB --> PR: promotions
+deactivate DB
+PR --> PS: promotions
+deactivate PR
+PS --> FE: promotionDTOs
+deactivate PS
+FE --> Consumer: Muestra promociones
+deactivate FE
+
+@enduml
+
+@startuml PromotionCreation
+
+' Diagrama de Creación de Promoción
+title Creación de Promoción por Institución
+
+actor Institution as "Institución"
+participant "Frontend" as FE
+participant "PromotionService" as PS
+participant "PromotionRepository" as PR
+database "Database" as DB
+
+Institution -> FE: Crea nueva promoción
+activate FE
+FE -> PS: createPromotion(promotionData)
+activate PS
+PS -> PS: validatePromotion()
+activate PS
+PS --> PS: validationResult
+deactivate PS
+alt validación exitosa
+    PS -> PR: save(promotionData)
+    activate PR
+    PR -> DB: INSERT INTO promotions
+    activate DB
+    DB --> PR: promotionId
+    deactivate DB
+    PR --> PS: promotion
+    deactivate PR
+    PS --> FE: promotionDTO
+    deactivate PS
+    FE --> Institution: Promoción creada exitosamente
+else validación fallida
+    PS --> FE: error
+    deactivate PS
+    FE --> Institution: Muestra error
+end
+deactivate FE
+
+@enduml

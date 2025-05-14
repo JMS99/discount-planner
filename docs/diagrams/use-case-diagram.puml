@@ -1,0 +1,83 @@
+@startuml DiscountPlannerUseCases
+
+' Estilos
+skinparam actorStyle awesome
+skinparam packageStyle rectangle
+
+' Actores
+actor Consumer as "Consumidor"
+actor Institution as "Institución"
+actor System as "Sistema"
+
+' Casos de uso para Consumidor
+rectangle "Consumidor" {
+    usecase "Registrarse" as UC1
+    usecase "Iniciar Sesión" as UC2
+    usecase "Gestionar Cuentas" as UC3
+    usecase "Buscar Promociones" as UC4
+    usecase "Filtrar Promociones" as UC5
+    usecase "Ver Detalles de Promoción" as UC6
+    usecase "Guardar Promociones Favoritas" as UC7
+    usecase "Actualizar Preferencias" as UC8
+}
+
+' Casos de uso para Institución
+rectangle "Institución" {
+    usecase "Registrarse" as UC9
+    usecase "Iniciar Sesión" as UC10
+    usecase "Crear Promoción" as UC11
+    usecase "Editar Promoción" as UC12
+    usecase "Eliminar Promoción" as UC13
+    usecase "Gestionar Promociones" as UC14
+}
+
+' Casos de uso del Sistema
+rectangle "Sistema" {
+    usecase "Validar Usuario" as UC15
+    usecase "Validar Promoción" as UC16
+    usecase "Notificar Promociones" as UC17
+    usecase "Validar Cuenta" as UC18
+}
+
+' Relaciones Consumidor
+Consumer --> UC1
+Consumer --> UC2
+Consumer --> UC3
+Consumer --> UC4
+Consumer --> UC5
+Consumer --> UC6
+Consumer --> UC7
+Consumer --> UC8
+
+' Relaciones Institución
+Institution --> UC9
+Institution --> UC10
+Institution --> UC11
+Institution --> UC12
+Institution --> UC13
+Institution --> UC14
+
+' Relaciones Sistema
+System --> UC15
+System --> UC16
+System --> UC17
+System --> UC18
+
+' Dependencias
+UC1 ..> UC15 : <<include>>
+UC2 ..> UC15 : <<include>>
+UC3 ..> UC18 : <<include>>
+UC4 ..> UC16 : <<include>>
+UC5 ..> UC16 : <<include>>
+UC6 ..> UC16 : <<include>>
+UC11 ..> UC16 : <<include>>
+UC12 ..> UC16 : <<include>>
+UC13 ..> UC16 : <<include>>
+
+' Extensiones
+UC4 <.. UC5 : <<extend>>
+UC4 <.. UC6 : <<extend>>
+UC11 <.. UC12 : <<extend>>
+UC11 <.. UC13 : <<extend>>
+
+@enduml 
