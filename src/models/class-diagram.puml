@@ -1,0 +1,214 @@
+@startuml DiscountPlannerBackend
+
+' Estilos
+skinparam classAttributeIconSize 0
+skinparam packageStyle rectangle
+skinparam linetype ortho
+
+' Enums
+enum AccountType {
+  BANK
+  FINTECH
+  CREDIT_CARD
+  OTHER
+}
+
+enum CardType {
+  VISA
+  MASTERCARD
+  AMERICAN_EXPRESS
+}
+
+enum PaymentMethod {
+  CONTACTLESS
+  PHYSICAL
+  QR
+  OTHER
+}
+
+enum InstitutionType {
+    BANK,
+    GOVERNMENT,
+    UNIVERSITY,
+    GYM,
+    PHARMACY,
+    MUTUAL,
+    UNION,
+    TELECOMMUNICATION,
+    CULTURAL,
+    RETAIL,
+    OTHER
+}
+
+' Entidades principales
+abstract class User {
+  -id: Long
+  -email: String
+  -password: String
+  -fullName?: String
+  -createdAt: DateTime
+  -updatedAt: DateTime
+  +authenticate()
+  +updateProfile()
+}
+
+class Consumer {
+  -preferences: List<String>
+  +getAccounts()
+  +getFavoritePromotions()
+}
+
+class Institution {
+  -businessName: String
+  -taxId: String
+  -type: InstitutionType
+  -description?: String
+  +getPromotions()
+  +addPromotion()
+  +deletePromotion()
+}
+
+class Account {
+  -id: Long
+  -name: String
+  -type: AccountType
+  -institution: Institution
+  -cardType?: CardType
+  -isContactless: Boolean
+  -isPhysical: Boolean
+  -createdAt: DateTime
+  -updatedAt: DateTime
+}
+
+class Promotion {
+  -id: Long
+  -institutionId: Long
+  -category: String
+  -description: String
+  -discountPercentage?: Decimal
+  -moneyReturn?: Decimal
+  -dayOfWeek: Integer
+  -startTime?: Time
+  -endTime?: Time
+  -startDate: Date
+  -endDate?: Date
+  -isActive: Boolean
+  -termsAndConditions?: String
+  -accountTypes: List<AccountType>
+  -cardTypes?: List<CardType>
+  -minAmount: Decimal
+  -maxAmount: Decimal
+  -externalLink: String
+  -installments?: Integer
+  -installmentInterest?: Decimal
+  -paymentMethods: List<PaymentMethod>
+  +validate()
+  +isAvailable()
+  +matchesAccountType()
+}
+
+' Servicios
+class UserService {
+  +register()
+  +login()
+  +updateUser()
+  +deleteUser()
+  +validateUserType()
+}
+
+class ConsumerService {
+  +registerConsumer()
+  +updatePreferences()
+  +getConsumerPromotions()
+  +getFavoriteInstitutions()
+}
+
+class InstitutionService {
+  +registerInstitution()
+  +validateBusiness()
+  +managePromotions()
+}
+
+class AccountService {
+  +createAccount()
+  +updateAccount()
+  +deleteAccount()
+  +getUserAccounts()
+  +getAvailablePromotions()
+}
+
+class PromotionService {
+  +createPromotion()
+  +updatePromotion()
+  +deletePromotion()
+  +getActivePromotions()
+  +filterByAccountType()
+  +filterByDate()
+  +filterByTime()
+  +filterByCategory()
+}
+
+' Repositorios
+interface UserRepository {
+  +findById()
+  +findByEmail()
+  +save()
+  +delete()
+}
+
+interface ConsumerRepository {
+  +findById()
+  +findByEmail()
+  +save()
+  +delete()
+  +findByPreferences()
+}
+
+interface InstitutionRepository {
+  +findById()
+  +findByBusinessName()
+  +save()
+  +delete()
+  +findByType()
+}
+
+interface AccountRepository {
+  +findById()
+  +findByUserId()
+  +save()
+  +delete()
+  +findByType()
+}
+
+interface PromotionRepository {
+  +findById()
+  +findByInstitution()
+  +findActive()
+  +save()
+  +delete()
+  +findByCategory()
+  +findByAccountType()
+  +findByTime()
+}
+
+' Relaciones
+User <|-- Consumer
+User <|-- Institution
+
+Consumer "1" -- "*" Account : has
+Institution "1" -- "*" Promotion : offers
+Account "*" -- "*" Promotion : eligible for
+
+UserService ..> UserRepository : uses
+ConsumerService ..> ConsumerRepository : uses
+InstitutionService ..> InstitutionRepository : uses
+AccountService ..> AccountRepository : uses
+PromotionService ..> PromotionRepository : uses
+
+UserService ..> User : manages
+ConsumerService ..> Consumer : manages
+InstitutionService ..> Institution : manages
+AccountService ..> Account : manages
+PromotionService ..> Promotion : manages
+
+@enduml 
